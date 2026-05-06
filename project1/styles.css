@@ -1,0 +1,272 @@
+/* 기본 리셋 및 설정 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    line-height: 1.6;
+    color: #ffffff;
+    background-color: #141414;
+}
+
+/* 공통 컨테이너 스타일 - 페이지 전체에서 재사용 */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* 헤더 스타일 - 페이지 상단 로고와 네비게이션 */
+.site-header {
+    background-color: #000000;
+    padding: 20px 0;
+    border-bottom: 2px solid #e50914;
+}
+
+.site-header .container {
+    display: flex;
+    justify-content: space-between; /* 로고와 네비게이션을 양 끝에 배치 */
+    align-items: center; /* 세로 중앙 정렬 */
+}
+
+.site-logo {
+    font-size: 28px;
+    font-weight: bold;
+    color: #e50914;
+    letter-spacing: 2px;
+}
+
+.site-nav .nav-list {
+    display: flex;
+    list-style: none;
+    gap: 30px;
+}
+
+.nav-link {
+    color: #ffffff;
+    text-decoration: none;
+    font-size: 16px;
+    transition: color 0.3s;
+}
+
+.nav-link:hover {
+    color: #e50914;
+}
+
+/* 메인 콘텐츠 - 헤더와 푸터 사이의 전체 영역 */
+.main-content {
+    min-height: 600px; /* 최소 높이 설정 (입문자가 이해하기 쉬운 고정값) */
+}
+
+/* 히어로 배너 스타일 - 메인 화면 상단의 큰 배너 영역 */
+.hero-banner {
+    background-color: #1a1a1a;
+    padding: 100px 20px;
+    text-align: center;
+    border-bottom: 3px solid #333333;
+}
+
+.hero-content {
+    max-width: 800px;
+    margin: 0 auto; /* 중앙 정렬 */
+}
+
+.hero-title {
+    font-size: 48px;
+    font-weight: bold;
+    margin: 0 0 20px 0; /* 단축 속성: 위 오른쪽 아래 왼쪽 */
+    line-height: 1.2;
+}
+
+.hero-description {
+    font-size: 20px;
+    margin: 0 0 30px 0; /* 단축 속성 */
+    color: #cccccc;
+}
+
+.hero-button {
+    background-color: #e50914;
+    color: #ffffff;
+    border: none;
+    padding: 15px 40px; /* 단축 속성: 위아래 좌우 */
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.3s; /* 마우스 올렸을 때 부드러운 색상 변화 */
+}
+
+.hero-button:hover {
+    background-color: #f40612; /* 마우스 올렸을 때 더 밝은 빨강 */
+}
+
+/* 콘텐츠 섹션 스타일 - 인기 콘텐츠 카드들이 표시되는 영역 */
+.content-section {
+    background-color: #141414;
+    padding: 60px 20px; /* 단축 속성: 위아래 좌우 */
+}
+
+.section-title {
+    font-size: 32px;
+    font-weight: bold;
+    max-width: 1200px;
+    margin: 0 auto 30px auto; /* 단축 속성으로 중앙 정렬 + 아래 여백 */
+    padding: 0 20px; /* 단축 속성: 위아래 좌우 */
+}
+
+.content-grid {
+    max-width: 1200px;
+    margin: 0 auto; /* 중앙 정렬 */
+    display: flex; /* 카드들을 가로로 배치 */
+    gap: 20px; /* 카드 사이 간격 */
+    flex-wrap: wrap; /* 화면이 좁으면 다음 줄로 넘김 */
+    justify-content: center; /* 카드들을 중앙에 배치 */
+}
+
+/* 콘텐츠 카드 스타일 - 개별 영화/시리즈 카드 */
+.content-card {
+    background-color: #2a2a2a;
+    border: 2px solid #333333;
+    border-radius: 8px; /* 모서리 둥글게 */
+    width: 250px;
+    overflow: hidden; /* 카드 밖으로 내용이 넘치지 않도록 */
+    transition: transform 0.3s, border-color 0.3s; /* 마우스 올렸을 때 부드러운 효과 */
+}
+
+.content-card:hover {
+    transform: scale(1.05); /* 마우스 올리면 카드가 1.05배 확대 */
+    border-color: #e50914; /* 테두리 색상 변경 */
+}
+
+.card-image {
+    width: 100%;
+    height: 350px;
+    background-color: #1a1a1a;
+    position: relative; /* 오버레이를 위한 기준점 설정 */
+    overflow: hidden; /* 이미지가 카드 밖으로 나가지 않도록 */
+}
+
+/* 카드 이미지 스타일 */
+.card-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* 이미지 비율 유지하며 영역 채우기 */
+    display: block; /* 이미지 하단 여백 제거 */
+}
+
+/* 플레이스홀더 이미지 (하위 호환성) */
+.placeholder-image {
+    color: #666666;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+}
+
+.card-info {
+    padding: 15px;
+}
+
+.card-title {
+    font-size: 20px;
+    font-weight: bold;
+    margin: 0 0 8px 0; /* 단축 속성 */
+}
+
+.card-description {
+    font-size: 14px;
+    color: #cccccc;
+    margin: 0; /* 기본 여백 제거 */
+}
+
+/* 카드 오버레이 스타일 - 마우스 올렸을 때 나타나는 정보 */
+.card-overlay {
+    position: absolute; /* 이미지 위에 겹치기 */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.85); /* 반투명 검정 배경 */
+    display: flex;
+    flex-direction: column; /* 세로 방향 배치 */
+    align-items: center; /* 가로 중앙 정렬 */
+    justify-content: center; /* 세로 중앙 정렬 */
+    opacity: 0; /* 기본 상태: 투명 (안 보임) */
+    transition: opacity 0.3s ease; /* 부드러운 나타남 효과 */
+}
+
+/* 카드에 마우스 올렸을 때 오버레이 표시 */
+.content-card:hover .card-overlay {
+    opacity: 1; /* 호버 시: 불투명 (보임) */
+}
+
+/* 재생 버튼 스타일 */
+.play-button {
+    background-color: #e50914; /* 넷플릭스 빨강 */
+    color: #ffffff;
+    border: none;
+    padding: 12px 30px; /* 단축 속성: 위아래 좌우 */
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 4px;
+    margin: 0 0 15px 0; /* 단축 속성: 아래 여백 */
+    transition: background-color 0.3s ease; /* 부드러운 색상 변화 */
+}
+
+.play-button:hover {
+    background-color: #f40612; /* 마우스 올리면 더 밝은 빨강 */
+}
+
+/* 오버레이 장르 정보 스타일 */
+.overlay-genre {
+    font-size: 14px;
+    color: #cccccc;
+    text-align: center;
+    margin: 0; /* 기본 여백 제거 */
+}
+
+/* 푸터 스타일 - 페이지 하단 정보 영역 */
+.site-footer {
+    background-color: #000000;
+    padding: 40px 20px; /* 단축 속성: 위아래 좌우 */
+    border-top: 2px solid #e50914;
+}
+
+
+.footer-links {
+    display: flex; /* 링크 목록들을 가로로 배치 */
+    gap: 60px; /* 목록 사이 간격 */
+    margin: 0 0 30px 0; /* 단축 속성 */
+    flex-wrap: wrap; /* 화면이 좁으면 다음 줄로 넘김 */
+}
+
+.footer-list {
+    list-style: none; /* 목록 앞 점 제거 */
+}
+
+.footer-item {
+    margin: 0 0 10px 0; /* 단축 속성 */
+}
+
+.footer-link {
+    color: #999999;
+    text-decoration: none; /* 밑줄 제거 */
+    font-size: 14px;
+    transition: color 0.3s; /* 마우스 올렸을 때 부드러운 색상 변화 */
+}
+
+.footer-link:hover {
+    color: #ffffff; /* 마우스 올리면 흰색으로 변경 */
+}
+
+.footer-copyright {
+    color: #666666;
+    font-size: 14px;
+    text-align: center;
+    margin: 20px 0 0 0; /* 단축 속성 */
+}
