@@ -239,7 +239,7 @@ project1/
 ---
 
 ## 📸 스크린샷
-*(브라우저에서 실행 후 스크린샷 추가 가능)*
+[*(브라우저에서 실행 후 스크린샷 추가 가능)*](https://github.com/sng-hyun/AI_Web_dev/issues/1#issue-4391581436)
 
 ---
 
