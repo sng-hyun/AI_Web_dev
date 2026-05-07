@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My To-do List</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-gray-50 flex flex-col">
+
+  <!-- ===== Header: 앱 대제목 영역 ===== -->
+  <header class="bg-indigo-600 shadow-md">
+    <div class="max-w-md sm:max-w-lg mx-auto px-4 sm:px-6 py-4 sm:py-6">
+      <h1 class="text-2xl font-bold text-white tracking-tight">📝 My To-do List</h1>
+      <p class="text-indigo-200 text-sm mt-1">오늘 할 일을 기록하고 관리하세요.</p>
+    </div>
+  </header>
+
+  <!-- ===== Main: 핵심 콘텐츠 영역 ===== -->
+  <main class="flex-1 max-w-md sm:max-w-lg mx-auto w-full px-4 sm:px-6 py-5 sm:py-8 flex flex-col gap-4 sm:gap-6">
+
+    <!-- Input Area: 텍스트 입력 + 추가 버튼 -->
+    <section aria-label="할 일 입력 영역">
+      <h2 class="sr-only">할 일 추가</h2>
+      <div class="flex items-center gap-2 bg-white rounded-xl shadow-sm border border-gray-200 px-3 sm:px-4 py-2 sm:py-3 focus-within:ring-2 focus-within:ring-indigo-400 focus-within:border-indigo-400 transition">
+        <input
+          type="text"
+          id="todo-input"
+          placeholder="오늘의 할 일을 등록해 보세요!"
+          class="peer flex-1 text-sm text-gray-700 placeholder-gray-400 bg-transparent outline-none py-1"
+          aria-label="할 일 입력"
+        />
+        <button
+          type="button"
+          id="add-btn"
+          class="flex-shrink-0 bg-indigo-500 hover:bg-indigo-600 active:bg-indigo-700 text-white text-lg font-bold w-9 h-9 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center transition-colors"
+          aria-label="할 일 추가"
+        >
+          +
+        </button>
+      </div>
+      <!-- 입력창 포커스 시 나타나는 힌트 문구 -->
+      <p class="mt-1.5 ml-1 text-xs text-gray-400 hidden peer-focus:block transition-all">
+        ✏️ Enter 키 또는 <span class="font-semibold text-indigo-400">+</span> 버튼을 눌러 추가하세요.
+      </p>
+
+      <!-- 마감 날짜 설정 토글 -->
+      <div class="flex items-center gap-2 mt-2 ml-1">
+        <input
+          type="checkbox"
+          id="use-date-toggle"
+          class="w-4 h-4 accent-indigo-500 cursor-pointer"
+        />
+        <label for="use-date-toggle" class="text-xs text-gray-500 cursor-pointer select-none">
+          📅 마감 날짜 설정
+        </label>
+      </div>
+
+      <!-- 날짜 입력창 (토글 ON 시 표시) -->
+      <div id="date-input-area" class="hidden mt-2">
+        <input
+          type="date"
+          id="due-date-input"
+          class="w-full text-sm text-gray-700 border border-gray-200 rounded-xl px-3 py-2 outline-none focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 transition bg-white"
+        />
+      </div>
+    </section>
+
+    <!-- Todo List: 할 일 카드 컨테이너 -->
+    <section aria-label="할 일 목록 영역">
+      <h2 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">할 일 목록</h2>
+
+      <!-- Status Area: 개수 표시 + 필터 버튼 (ul 바로 위) -->
+      <div class="mb-3 bg-white rounded-xl shadow-sm border border-gray-100 px-4 sm:px-5 py-3 sm:py-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+
+        <!-- 전체 개수 표시 -->
+        <p class="text-sm text-gray-500">
+          전체 <span id="total-count" class="font-semibold text-indigo-600">0</span>개
+          &nbsp;·&nbsp;
+          완료 <span id="done-count" class="font-semibold text-green-500">0</span>개
+        </p>
+
+        <!-- 필터 버튼 그룹 -->
+        <div class="flex gap-2" role="group" aria-label="필터 선택">
+          <button
+            type="button"
+            class="filter-btn flex-1 sm:flex-none text-xs font-medium px-4 py-1.5 rounded-full bg-indigo-500 text-white transition-colors"
+            data-filter="all"
+          >
+            전체
+          </button>
+          <button
+            type="button"
+            class="filter-btn flex-1 sm:flex-none text-xs font-medium px-4 py-1.5 rounded-full bg-gray-100 text-gray-500 hover:bg-indigo-100 hover:text-indigo-600 transition-colors"
+            data-filter="active"
+          >
+            진행 중
+          </button>
+          <button
+            type="button"
+            class="filter-btn flex-1 sm:flex-none text-xs font-medium px-4 py-1.5 rounded-full bg-gray-100 text-gray-500 hover:bg-indigo-100 hover:text-indigo-600 transition-colors"
+            data-filter="done"
+          >
+            완료
+          </button>
+        </div>
+
+      </div>
+
+      <!-- 카드 목록 컨테이너 (JS renderTodos()가 동적으로 채워주는 영역) -->
+      <ul id="todo-list" class="flex flex-col gap-3">
+        <!-- 항목은 script.js의 renderTodos()가 동적으로 생성합니다 -->
+      </ul>
+
+      <!-- 리스트 관리 버튼 영역 (항목이 있을 때만 표시) -->
+      <div id="manage-area" class="hidden mt-3 flex justify-end">
+        <button
+          id="manage-btn"
+          type="button"
+          class="text-xs text-indigo-500 hover:text-indigo-600 border border-indigo-200 hover:bg-indigo-50 px-4 py-1.5 rounded-lg transition-colors font-medium"
+        >
+          ⚙️ 리스트 관리
+        </button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ===== Footer: 하단 정보 영역 ===== -->
+  <footer class="bg-white border-t border-gray-100 mt-auto">
+    <div class="max-w-md sm:max-w-lg mx-auto px-4 sm:px-6 py-4 sm:py-5 text-center">
+      <p class="text-xs text-gray-400">&copy; 2026 My To-do List. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- ===== 리스트 관리 모달 ===== -->
+  <div id="manage-modal" class="hidden fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl w-full max-w-md shadow-xl flex flex-col max-h-[80vh]">
+
+      <!-- 모달 헤더 -->
+      <div class="flex items-center justify-between px-5 py-4 border-b border-gray-100">
+        <h2 class="text-base font-semibold text-gray-700">⚙️ 리스트 관리</h2>
+        <button
+          id="modal-close-btn"
+          type="button"
+          class="text-gray-400 hover:text-gray-600 text-xl leading-none transition-colors"
+          aria-label="모달 닫기"
+        >✕</button>
+      </div>
+
+      <!-- 탭: 전체 / 진행 중 / 완료 -->
+      <div class="flex gap-2 px-5 py-3 border-b border-gray-100">
+        <button
+          type="button"
+          class="manage-tab-btn flex-1 text-xs font-medium px-3 py-1.5 rounded-full bg-indigo-500 text-white transition-colors"
+          data-tab="all"
+        >전체</button>
+        <button
+          type="button"
+          class="manage-tab-btn flex-1 text-xs font-medium px-3 py-1.5 rounded-full bg-gray-100 text-gray-500 hover:bg-indigo-100 hover:text-indigo-600 transition-colors"
+          data-tab="active"
+        >진행 중</button>
+        <button
+          type="button"
+          class="manage-tab-btn flex-1 text-xs font-medium px-3 py-1.5 rounded-full bg-gray-100 text-gray-500 hover:bg-indigo-100 hover:text-indigo-600 transition-colors"
+          data-tab="done"
+        >완료</button>
+      </div>
+
+      <!-- 항목 목록 (선택용 체크박스) -->
+      <ul id="manage-list" class="flex-1 overflow-y-auto px-5 py-3 flex flex-col gap-2">
+        <!-- JS renderManageList()가 동적으로 채웁니다 -->
+      </ul>
+
+      <!-- 하단 액션 버튼 -->
+      <div class="flex gap-2 px-5 py-4 border-t border-gray-100 flex-wrap">
+        <button
+          id="modal-delete-selected-btn"
+          type="button"
+          class="flex-1 text-xs font-medium text-orange-500 hover:text-orange-600 border border-orange-200 hover:bg-orange-50 px-3 py-2 rounded-lg transition-colors"
+        >✅ 선택 삭제</button>
+        <button
+          id="modal-delete-all-btn"
+          type="button"
+          class="flex-1 text-xs font-medium text-red-500 hover:text-red-600 border border-red-200 hover:bg-red-50 px-3 py-2 rounded-lg transition-colors"
+        >🗑️ 전체 삭제</button>
+        <button
+          id="open-trash-btn"
+          type="button"
+          class="flex-1 text-xs font-medium text-gray-500 hover:text-gray-700 border border-gray-200 hover:bg-gray-50 px-3 py-2 rounded-lg transition-colors"
+        >🗑️ 휴지통</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ===== 휴지통 모달 ===== -->
+  <div id="trash-modal" class="hidden fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl w-full max-w-md shadow-xl flex flex-col max-h-[80vh]">
+
+      <!-- 모달 헤더 -->
+      <div class="flex items-center justify-between px-5 py-4 border-b border-gray-100">
+        <h2 class="text-base font-semibold text-gray-700">🗑️ 휴지통</h2>
+        <button
+          id="trash-close-btn"
+          type="button"
+          class="text-gray-400 hover:text-gray-600 text-xl leading-none transition-colors"
+          aria-label="휴지통 닫기"
+        >✕</button>
+      </div>
+
+      <!-- 안내 문구 -->
+      <p class="text-xs text-gray-400 px-5 pt-3 pb-1">삭제된 항목은 <span class="text-red-400 font-medium">30일 후</span> 자동으로 영구 삭제됩니다.</p>
+
+      <!-- 휴지통 항목 목록 -->
+      <ul id="trash-list" class="flex-1 overflow-y-auto px-5 py-3 flex flex-col gap-2">
+        <!-- JS renderTrashList()가 동적으로 채웁니다 -->
+      </ul>
+
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
