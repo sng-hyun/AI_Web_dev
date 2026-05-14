@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GitHub Users Finder</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary:        '#5645d4',
+            'primary-pressed': '#4534b3',
+            'primary-deep': '#3a2a99',
+            'brand-navy':   '#0a1530',
+            'brand-navy-mid': '#1a2a52',
+            'link-blue':    '#0075de',
+            'brand-orange': '#dd5b00',
+            'brand-orange-deep': '#793400',
+            'brand-pink':   '#ff64c8',
+            'brand-pink-deep': '#a02e6d',
+            'brand-purple': '#7b3ff2',
+            'brand-purple-800': '#391c57',
+            'brand-teal':   '#2a9d99',
+            'brand-green':  '#1aae39',
+            'brand-yellow': '#f5d75e',
+            'tint-peach':   '#ffe8d4',
+            'tint-rose':    '#fde0ec',
+            'tint-mint':    '#d9f3e1',
+            'tint-lavender':'#e6e0f5',
+            'tint-sky':     '#dcecfa',
+            'tint-yellow':  '#fef7d6',
+            'tint-yellow-bold': '#f9e79f',
+            'tint-cream':   '#f8f5e8',
+            canvas:         '#ffffff',
+            surface:        '#f6f5f4',
+            'surface-soft': '#fafaf9',
+            hairline:       '#e5e3df',
+            'hairline-soft':'#ede9e4',
+            'hairline-strong': '#c8c4be',
+            'ink-deep':     '#000000',
+            ink:            '#1a1a1a',
+            charcoal:       '#37352f',
+            slate:          '#5d5b54',
+            steel:          '#787671',
+            stone:          '#a4a097',
+            muted:          '#bbb8b1',
+            'on-dark':      '#ffffff',
+            'on-dark-muted':'#a4a097',
+            'sem-success':  '#1aae39',
+            'sem-warning':  '#dd5b00',
+            'sem-error':    '#e03131',
+          },
+          fontFamily: {
+            sans: ['Inter', '-apple-system', 'system-ui', 'Segoe UI', 'Helvetica', 'sans-serif'],
+          },
+          borderRadius: {
+            xs:   '4px',
+            sm:   '6px',
+            md:   '8px',
+            lg:   '12px',
+            xl:   '16px',
+            xxl:  '20px',
+            xxxl: '24px',
+            full: '9999px',
+          },
+          boxShadow: {
+            card:   'rgba(15,15,15,0.08) 0px 4px 12px 0px',
+            mockup: 'rgba(15,15,15,0.20) 0px 24px 48px -8px',
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    body { font-family: 'Inter', -apple-system, system-ui, 'Segoe UI', Helvetica, sans-serif; }
+
+    /* 검색 입력창 포커스 */
+    #search-input:focus {
+      outline: none;
+      border: 2px solid #5645d4;
+    }
+
+    /* 프로필 카드 초기 숨김 */
+    #profile-section { display: none; }
+    #repos-section   { display: none; }
+
+    /* 로딩 스피너 */
+    .spinner {
+      width: 24px; height: 24px;
+      border: 3px solid #e6e0f5;
+      border-top-color: #5645d4;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      display: inline-block;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* 배지 공통 */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 13px;
+      font-weight: 600;
+      line-height: 1.4;
+      border-radius: 9999px;
+      padding: 4px 10px;
+      white-space: nowrap;
+    }
+    .badge-sm {
+      font-size: 12px;
+      font-weight: 600;
+      border-radius: 6px;
+      padding: 2px 8px;
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      white-space: nowrap;
+    }
+
+    /* 저장소 항목 hover */
+    .repo-item:hover { background-color: #fafaf9; }
+
+    /* 링크 hover */
+    a.repo-link:hover { text-decoration: underline; }
+
+    /* ── 페이드인 애니메이션 ── */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .fade-in {
+      animation: fadeIn 0.35s ease forwards;
+    }
+
+    /* ── Contribution Graph ── */
+    #contrib-chart {
+      height: 128px;
+      width: auto;
+      min-width: 720px;
+      display: block;
+    }
+  </style>
+</head>
+<body class="bg-surface font-sans text-ink min-h-screen">
+
+  <!-- ===== 내비게이션 바 ===== -->
+  <nav class="sticky top-0 z-50 bg-canvas border-b border-hairline" style="height:64px;">
+    <div class="container mx-auto max-w-[1280px] px-8 h-full flex items-center justify-between">
+      <!-- 로고 + 타이틀 -->
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 rounded-md flex items-center justify-center" style="background:#0a1530;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2C6.477 2 2 6.477 2 12c0 4.418 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.009-.868-.013-1.703-2.782.604-3.369-1.342-3.369-1.342-.454-1.154-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0112 6.836c.85.004 1.705.114 2.504.336 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.202 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.163 22 16.418 22 12c0-5.523-4.477-10-10-10z" fill="white"/>
+          </svg>
+        </div>
+        <span class="text-brand-navy font-semibold text-lg tracking-tight">GitHub Users Finder</span>
+      </div>
+      <!-- 우측 링크 -->
+      <a href="https://github.com" target="_blank" rel="noopener"
+         class="text-sm font-medium text-steel hover:text-ink transition-colors duration-150">
+        GitHub →
+      </a>
+    </div>
+  </nav>
+
+  <!-- ===== 히어로 검색 밴드 ===== -->
+  <section class="bg-brand-navy py-16 md:py-20" style="padding-top:80px; padding-bottom:80px;">
+    <div class="container mx-auto max-w-[1280px] px-8 flex flex-col items-center text-center">
+      <!-- 헤드라인 -->
+      <h1 class="text-on-dark font-semibold mb-3"
+          style="font-size:clamp(36px,5vw,56px); line-height:1.10; letter-spacing:-1px;">
+        Find GitHub Users
+      </h1>
+      <p class="text-on-dark-muted mb-10" style="font-size:18px; line-height:1.5; max-width:480px;">
+        GitHub 사용자 이름을 입력하고 프로필과 저장소를 탐색해 보세요.
+      </p>
+
+      <!-- 검색 입력 + 버튼 -->
+      <div class="w-full max-w-xl flex gap-3">
+        <input
+          id="search-input"
+          type="text"
+          placeholder="GitHub 사용자 이름 입력..."
+          autocomplete="off"
+          class="flex-1 bg-canvas text-ink border border-hairline-strong rounded-md px-4 text-base transition-all duration-150"
+          style="height:44px; font-size:16px; line-height:1.55;"
+        />
+        <button
+          id="search-btn"
+          class="flex items-center gap-2 text-on-primary font-medium rounded-md transition-colors duration-150"
+          style="background:#5645d4; padding:10px 18px; font-size:14px; line-height:1.3; border-radius:8px; white-space:nowrap;"
+          onmousedown="this.style.background='#4534b3'"
+          onmouseup="this.style.background='#5645d4'"
+          onmouseleave="this.style.background='#5645d4'"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+          Search
+        </button>
+      </div>
+
+      <!-- 피드백 / 에러 메시지 -->
+      <div id="feedback-msg" class="mt-4 min-h-[24px] text-sm font-medium" style="min-height:24px;"></div>
+
+      <!-- 로딩 스피너 -->
+      <div id="loading" class="mt-6 hidden">
+        <div class="spinner"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 메인 콘텐츠 ===== -->
+  <main class="container mx-auto max-w-[1280px] px-8 py-12">
+
+    <!-- 프로필 카드 -->
+    <section id="profile-section" class="mb-8">
+      <div class="bg-canvas rounded-lg border border-hairline p-8 shadow-card">
+        <div class="flex flex-col md:flex-row gap-8">
+
+          <!-- 좌측: 프로필 이미지 -->
+          <div class="flex-shrink-0 flex flex-col items-center md:items-start gap-4">
+            <img
+              id="profile-avatar"
+              src=""
+              alt="Profile Avatar"
+              class="w-32 h-32 rounded-full border-2 border-hairline object-cover"
+              style="box-shadow: rgba(15,15,15,0.08) 0px 4px 12px 0px;"
+            />
+            <a
+              id="profile-link"
+              href="#"
+              target="_blank"
+              rel="noopener"
+              class="w-full text-center text-on-primary font-medium rounded-md transition-colors duration-150"
+              style="background:#5645d4; padding:10px 18px; font-size:14px; line-height:1.3; border-radius:8px; display:inline-block; text-decoration:none;"
+              onmousedown="this.style.background='#4534b3'"
+              onmouseup="this.style.background='#5645d4'"
+              onmouseleave="this.style.background='#5645d4'"
+            >
+              View Profile
+            </a>
+          </div>
+
+          <!-- 우측: 사용자 정보 -->
+          <div class="flex-1 min-w-0">
+            <!-- 이름 & 로그인 -->
+            <div class="mb-2">
+              <h2 id="profile-name" class="font-semibold text-ink-deep" style="font-size:28px; line-height:1.25;"></h2>
+              <p id="profile-login" class="text-steel" style="font-size:16px; line-height:1.55;"></p>
+            </div>
+
+            <!-- Bio -->
+            <p id="profile-bio" class="text-charcoal mb-5" style="font-size:16px; line-height:1.55;"></p>
+
+            <!-- 배지 통계 -->
+            <div class="flex flex-wrap gap-2 mb-6">
+              <span class="badge" style="background:#5645d4; color:#fff;">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M3 3h18v18H3V3zm2 2v14h14V5H5zm2 2h10v2H7V7zm0 4h10v2H7v-2zm0 4h7v2H7v-2z"/></svg>
+                <span id="stat-repos">0</span> Public Repos
+              </span>
+              <span class="badge" style="background:#ff64c8; color:#fff;">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18"/></svg>
+                <span id="stat-gists">0</span> Public Gists
+              </span>
+              <span class="badge" style="background:#dd5b00; color:#fff;">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+                <span id="stat-followers">0</span> Followers
+              </span>
+              <span class="badge" style="background:#d9f3e1; color:#1aae39;">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+                <span id="stat-following">0</span> Following
+              </span>
+            </div>
+
+            <!-- 세부 정보 리스트 -->
+            <ul class="space-y-2" style="font-size:14px; line-height:1.5;">
+              <li id="detail-company" class="flex items-center gap-2 text-charcoal hidden">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#787671" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
+                </svg>
+                <span id="company-text" class="text-charcoal"></span>
+              </li>
+              <li id="detail-blog" class="flex items-center gap-2 hidden">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#787671" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/>
+                </svg>
+                <a id="blog-link" href="#" target="_blank" rel="noopener" class="text-link-blue hover:underline"></a>
+              </li>
+              <li id="detail-location" class="flex items-center gap-2 text-charcoal hidden">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#787671" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/>
+                </svg>
+                <span id="location-text" class="text-charcoal"></span>
+              </li>
+              <li id="detail-joined" class="flex items-center gap-2 text-charcoal">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#787671" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+                </svg>
+                <span id="joined-text" class="text-charcoal"></span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contribution Graph 섹션 -->
+    <section id="contrib-section" class="mb-8" style="display:none;">
+      <div class="bg-white rounded-lg border border-hairline p-6" style="box-shadow: rgba(15,15,15,0.04) 0px 1px 2px 0px, rgba(15,15,15,0.06) 0px 2px 8px 0px;">
+        <!-- 섹션 헤더 -->
+        <div class="flex items-center gap-3 mb-5 pb-4 border-b border-hairline">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5645d4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+          </svg>
+          <h3 class="font-semibold text-ink-deep" style="font-size:22px; line-height:1.3;">Contribution Graph</h3>
+        </div>
+
+        <!-- 잔디밭 이미지 (가로 스크롤 래퍼) -->
+        <div class="overflow-x-auto">
+          <img
+            id="contrib-chart"
+            src=""
+            alt="Contribution Chart"
+            style="opacity:0; transition: opacity 0.35s ease;"
+          />
+        </div>
+
+        <!-- 범례 -->
+        <div class="flex items-center gap-2 mt-4 justify-end" style="font-size:11px; color:#787671; font-weight:500;">
+          <span>Less</span>
+          <span style="width:12px;height:12px;border-radius:2px;background:#ebedf0;display:inline-block;"></span>
+          <span style="width:12px;height:12px;border-radius:2px;background:#9be9a8;display:inline-block;"></span>
+          <span style="width:12px;height:12px;border-radius:2px;background:#40c463;display:inline-block;"></span>
+          <span style="width:12px;height:12px;border-radius:2px;background:#30a14e;display:inline-block;"></span>
+          <span style="width:12px;height:12px;border-radius:2px;background:#216e39;display:inline-block;"></span>
+          <span>More</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 저장소 목록 -->
+    <section id="repos-section">
+      <div class="bg-canvas rounded-lg border border-hairline p-8 shadow-card">
+        <!-- 섹션 헤더 -->
+        <div class="flex items-center gap-3 mb-6 pb-4 border-b border-hairline">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5645d4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/>
+          </svg>
+          <h3 class="font-semibold text-ink-deep" style="font-size:22px; line-height:1.3;">Latest Repos</h3>
+        </div>
+
+        <!-- 저장소 리스트 -->
+        <ul id="repos-list" class="divide-y divide-hairline-soft">
+          <!-- JS로 동적 생성 -->
+        </ul>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ===== 푸터 ===== -->
+  <footer class="bg-canvas border-t border-hairline mt-12">
+    <div class="container mx-auto max-w-[1280px] px-8 py-8 flex flex-col md:flex-row items-center justify-between gap-4">
+      <p class="text-steel" style="font-size:14px; line-height:1.5;">
+        © 2025 GitHub Users Finder — Powered by
+        <a href="https://docs.github.com/en/rest" target="_blank" rel="noopener" class="text-link-blue hover:underline">GitHub REST API</a>
+      </p>
+      <p class="text-stone" style="font-size:13px;">
+        Design inspired by Notion Design System
+      </p>
+    </div>
+  </footer>
+
+  <!-- ===== JavaScript ===== -->
+  <script src="script.js"></script>
+</body>
+</html>
