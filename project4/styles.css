@@ -1,0 +1,342 @@
+/* ============================================================
+   Spreadsheet MVP — styles.css
+   ============================================================ */
+
+/* ── Reset & Base ─────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Segoe UI', Arial, sans-serif;
+  font-size: 13px;
+  background: #f0f2f5;
+  color: #1a1a2e;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── App Shell ────────────────────────────────────────────── */
+.app-header {
+  background: #1a73e8;
+  color: #fff;
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  flex-shrink: 0;
+}
+
+.app-header h1 {
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+/* ── Toolbar ──────────────────────────────────────────────── */
+.toolbar {
+  background: #fff;
+  border-bottom: 1px solid #dadce0;
+  padding: 8px 16px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+
+.coordinate-box {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.coordinate-label {
+  font-size: 12px;
+  color: #5f6368;
+  font-weight: 500;
+}
+
+#coordinate-display {
+  min-width: 48px;
+  padding: 4px 10px;
+  background: #f8f9fa;
+  border: 1px solid #dadce0;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #1a73e8;
+  text-align: center;
+  letter-spacing: 0.5px;
+}
+
+/* Export button group */
+.export-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+#export-btn {
+  padding: 7px 18px;
+  background: #1a73e8;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+#export-btn:hover {
+  background: #1558b0;
+}
+
+#export-btn:active {
+  background: #0d47a1;
+}
+
+#export-csv-btn {
+  padding: 7px 18px;
+  background: #188038;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+#export-csv-btn:hover {
+  background: #0d652d;
+}
+
+#export-csv-btn:active {
+  background: #0a4f23;
+}
+
+/* ── Grid Resize Controls ─────────────────────────────────── */
+.grid-resize-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-left: 1px solid #dadce0;
+  padding-left: 16px;
+}
+
+.resize-control {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.resize-label {
+  font-size: 12px;
+  color: #5f6368;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.resize-input {
+  width: 52px;
+  padding: 5px 6px;
+  border: 1px solid #dadce0;
+  border-radius: 4px;
+  font-size: 13px;
+  color: #1a1a2e;
+  text-align: center;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.resize-input:focus {
+  border-color: #1a73e8;
+  box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.2);
+}
+
+/* Remove number input spinners for cleaner look */
+.resize-input::-webkit-inner-spin-button,
+.resize-input::-webkit-outer-spin-button {
+  opacity: 0.5;
+}
+
+.resize-btn {
+  padding: 5px 12px;
+  background: #f8f9fa;
+  color: #3c4043;
+  border: 1px solid #dadce0;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+  white-space: nowrap;
+}
+
+.resize-btn:hover {
+  background: #e8f0fe;
+  border-color: #1a73e8;
+  color: #1a73e8;
+}
+
+.resize-btn:active {
+  background: #d2e3fc;
+}
+
+/* ── Messages ─────────────────────────────────────────────── */
+#validation-message {
+  display: none;
+  padding: 5px 12px;
+  background: #fce8e6;
+  color: #c5221f;
+  border: 1px solid #f28b82;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.export-error {
+  display: none;
+  padding: 5px 12px;
+  background: #fce8e6;
+  color: #c5221f;
+  border: 1px solid #f28b82;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* ── Grid Wrapper ─────────────────────────────────────────── */
+.grid-wrapper {
+  flex: 1;
+  overflow: auto;
+  padding: 16px;
+}
+
+#grid-container {
+  display: inline-block;
+}
+
+/* ── Table ────────────────────────────────────────────────── */
+.spreadsheet-table {
+  border-collapse: collapse;
+  table-layout: fixed;
+  background: #fff;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.12);
+  user-select: none;
+}
+
+/* ── Header Cells ─────────────────────────────────────────── */
+.header-cell {
+  background: #f8f9fa;
+  border: 1px solid #dadce0;
+  font-size: 12px;
+  font-weight: 600;
+  color: #5f6368;
+  text-align: center;
+  padding: 0;
+  white-space: nowrap;
+  position: sticky;
+  z-index: 2;
+}
+
+.corner-cell {
+  width: 40px;
+  min-width: 40px;
+  top: 0;
+  left: 0;
+  z-index: 3;
+}
+
+.col-header {
+  width: 100px;
+  min-width: 80px;
+  height: 24px;
+  top: 0;
+}
+
+.row-header {
+  width: 40px;
+  min-width: 40px;
+  left: 0;
+  z-index: 2;
+}
+
+/* Active (highlighted) header */
+.header-cell.header-active {
+  background: #d2e3fc;
+  color: #1a73e8;
+}
+
+/* ── Data Cells ───────────────────────────────────────────── */
+.data-cell {
+  border: 1px solid #e0e0e0;
+  width: 100px;
+  min-width: 80px;
+  height: 26px;
+  padding: 0;
+  position: relative;
+  outline: none;
+  cursor: cell;
+  overflow: hidden;
+}
+
+.data-cell:focus {
+  outline: none;
+}
+
+/* Focused cell border */
+.data-cell.cell-focused {
+  box-shadow: inset 0 0 0 2px #1a73e8;
+  z-index: 1;
+}
+
+/* ── Cell Input ───────────────────────────────────────────── */
+.cell-input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: inherit;
+  font-size: 13px;
+  color: #1a1a2e;
+  padding: 2px 4px;
+  cursor: cell;
+  pointer-events: none; /* clicks go to td; input activated programmatically */
+  caret-color: transparent; /* hide cursor until user starts typing or enters edit mode */
+}
+
+.cell-input:focus {
+  /* Keep background transparent so the td's cell-focused box-shadow remains visible */
+  background: transparent;
+  cursor: text;
+  pointer-events: auto;
+  z-index: 1;
+  outline: none;
+}
+
+/* ── Footer ───────────────────────────────────────────────── */
+.app-footer {
+  background: #fff;
+  border-top: 1px solid #dadce0;
+  padding: 6px 16px;
+  font-size: 11px;
+  color: #9aa0a6;
+  text-align: right;
+  flex-shrink: 0;
+}

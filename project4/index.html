@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Spreadsheet MVP</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- ── App Header ──────────────────────────────────────── -->
+  <header class="app-header">
+    <h1>📊 Spreadsheet</h1>
+  </header>
+
+  <!-- ── Toolbar ─────────────────────────────────────────── -->
+  <div class="toolbar" role="toolbar" aria-label="스프레드시트 도구 모음">
+    <div class="coordinate-box">
+      <span class="coordinate-label">셀 위치</span>
+      <span id="coordinate-display" aria-live="polite" aria-atomic="true">—</span>
+    </div>
+
+    <div class="export-group">
+      <button id="export-btn" type="button" aria-label="Excel 파일로 내보내기">
+        ⬇ Excel (.xlsx)
+      </button>
+      <button id="export-csv-btn" type="button" aria-label="CSV 파일로 내보내기">
+        ⬇ CSV (.csv)
+      </button>
+    </div>
+
+    <div class="grid-resize-group">
+      <div class="resize-control">
+        <label for="add-rows-input" class="resize-label">행 추가</label>
+        <input id="add-rows-input" type="number" class="resize-input" value="1" min="1" max="100" aria-label="추가할 행 수" />
+        <button id="add-rows-btn" type="button" class="resize-btn" aria-label="행 추가">+ 행</button>
+      </div>
+      <div class="resize-control">
+        <label for="add-cols-input" class="resize-label">열 추가</label>
+        <input id="add-cols-input" type="number" class="resize-input" value="1" min="1" max="100" aria-label="추가할 열 수" />
+        <button id="add-cols-btn" type="button" class="resize-btn" aria-label="열 추가">+ 열</button>
+      </div>
+    </div>
+
+    <span id="validation-message" role="alert" aria-live="assertive"></span>
+  </div>
+
+  <!-- ── Grid ────────────────────────────────────────────── -->
+  <main class="grid-wrapper">
+    <div id="grid-container" role="region" aria-label="스프레드시트 그리드"></div>
+  </main>
+
+  <!-- ── Footer ──────────────────────────────────────────── -->
+  <footer class="app-footer">
+    20 행 × 10 열 &nbsp;|&nbsp; 데이터는 브라우저 새로고침 시 초기화됩니다.
+  </footer>
+
+  <!-- ── SheetJS CDN ──────────────────────────────────────── -->
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+
+  <!-- ── App Modules (dependency order) ──────────────────── -->
+  <script src="js/CoordinateUtils.js"></script>
+  <script src="js/SpreadsheetState.js"></script>
+  <script src="js/GridRenderer.js"></script>
+  <script src="js/DataCollector.js"></script>
+  <script src="js/ExcelExporter.js"></script>
+  <script src="js/EventController.js"></script>
+  <script src="js/main.js"></script>
+
+</body>
+</html>
